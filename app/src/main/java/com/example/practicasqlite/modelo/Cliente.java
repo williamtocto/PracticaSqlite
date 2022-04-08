@@ -1,6 +1,10 @@
 package com.example.practicasqlite.modelo;
 
 import android.content.Context;
+import android.database.Cursor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Cliente {
     private String nombre;
@@ -12,9 +16,12 @@ public class Cliente {
     private String correo;
     private int id_usuario;
 
+    private List<Cliente> lista=new ArrayList<>();
+
     public Cliente() {
 
     }
+
     public Cliente(String nombre, int id, String fecha_nac, String apellido, String direccion, String telefono, String correo, int id_usuario) {
         this.nombre = nombre;
         this.id = id;
@@ -45,14 +52,38 @@ public class Cliente {
         db.close();
     }
 
-    public void eliminar(Context context){
+    public void eliminar(Context context) {
         DbHelper db = new DbHelper(context);
-        String noSql = "DELETE FROM cliente where id= "+getId();
+        String noSql = "DELETE FROM cliente where id= " + getId();
         db.noQuery(noSql);
         db.close();
 
     }
 
+    public List<Cliente> listar(Context context) {
+        DbHelper db = new DbHelper(context);
+        String sql = "SELECT * FROM cliente";
+        Cursor cursor = db.query(sql);
+        while(cursor.moveToNext()){
+            Cliente clie=new Cliente();
+            clie.setId(cursor.getInt(0));
+            clie.setNombre(cursor.getString(1));
+            clie.setApellido(cursor.getString(2));
+            clie.setDireccion(cursor.getString(4));
+            clie.setFecha_nac(cursor.getString(3));
+            clie.setTelefono(cursor.getString(5));
+            clie.setCorreo(cursor.getString(6));
+            lista.add(clie);
+        }
+        return lista;
+    }
+
+    public int codigo(Context context){
+        DbHelper db = new DbHelper(context);
+        String sql = "SELECT * FROM cliente";
+        int codigo=0;
+       return codigo;
+    }
 
 
     public void setFecha_nac(String fecha_nac) {

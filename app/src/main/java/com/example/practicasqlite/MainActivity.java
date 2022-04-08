@@ -1,16 +1,19 @@
 package com.example.practicasqlite;
 
+import android.annotation.SuppressLint;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.*;
 
 import com.example.practicasqlite.modelo.Cliente;
 import com.example.practicasqlite.modelo.DbHelper;
 import com.example.practicasqlite.modelo.Usuario;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     Button btneliminar;
@@ -18,13 +21,24 @@ public class MainActivity extends AppCompatActivity {
     Button btnEditar;
     Button btnGrabar;
     EditText id, nombre, apellido, direccion, telefono, correo, usuario, clave, fecha;
+    ListView listViewcliente;
+
+    ArrayList<String> datos;
+    ArrayAdapter arrayAdapter ;
+    Cliente cli = new Cliente();
+    List<Cliente> lista;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         btnCrear = findViewById(R.id.btn_Crear);
+        listar();
+        listViewcliente = (ListView) findViewById(R.id.listViewCliente);
 
+        arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, datos);
+
+        listViewcliente.setAdapter(arrayAdapter);
 
         btnCrear.setOnClickListener(
                 new View.OnClickListener() {
@@ -94,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
     public void guardarDatos(int op) {
         Usuario user = new Usuario();
 
-        user.setId(1);
+        user.setId(10);
         user.setUsuario(usuario.getText().toString());
         user.setPassword(clave.getText().toString());
         user.setTipoUsuario("Cliente");
@@ -123,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
             cli.editar(MainActivity.this);
             Toast.makeText(getApplicationContext(), "Clinte Editado".toString(), Toast.LENGTH_LONG).show();
         }
-
+        actualizar();
 
     }
 
@@ -132,12 +146,30 @@ public class MainActivity extends AppCompatActivity {
         Usuario user = new Usuario();
         user.setId(1);
         user.eliminar(MainActivity.this);
-        Cliente cli = new Cliente();
+
         cli.setId(Integer.parseInt(id.getText().toString()));
         cli.eliminar(MainActivity.this);
 
         Toast.makeText(getApplicationContext(), "Clinte Eliminado".toString(), Toast.LENGTH_LONG).show();
-
+        actualizar();
     }
+
+    public void listar() {
+        datos = new ArrayList<String>();
+        lista = cli.listar(MainActivity.this);
+
+        for (int i = 0; i < lista.size(); i++) {
+             datos.add(lista.get(i).getId()+" "+lista.get(i).getNombre()+"--"+lista.get(i).getApellido()
+                     +"--"+ lista.get(i).getDireccion()+"--"+lista.get(i).getFecha_nac()+"--"+
+                     lista.get(i).getCorreo());
+        }
+    }
+
+    public  void actualizar(){
+        lista.clear();
+        listar();
+        arrayAdapter.notifyDataSetChanged();
+    }
+
 
 }
